@@ -45,715 +45,740 @@ import com.ats.tankwebapi.work.model.GetWorkDetail;
 
 @RestController
 public class MasterController {
-	
-	  @Autowired 
-	  UserRepo userRepo;
-	  
-	  @Autowired
-	  CustomerRepo customerRepo;
-	  
-	  @Autowired
-	  EmployeeRepo employeeRepo;
-	  
-	  @Autowired
-	  LocationRepo locationRepo;
-	  
-	  @Autowired
-	  WorkRepo workRepo;
-	  
-	  @Autowired
-	  GetWorkCustomerRepo getWorkCustomerRepo;
-	  
-	  @Autowired
-	  GetCustomerInfoRepo getCustomerInfoRepo;
-	  
-	  @Autowired
-	  SettingRepo settingRepo;
-	  
-	  @Autowired
-	  PaymentRepo paymentRepo;
-	  
-	  @Autowired
-	  GetCustomerDetailsRepo getCustomerDetailsRepo;
-	  
-	  @Autowired
-	  GetCustomerLocNameRepo getCustomerLocNameRepo;
-	  
-	  @Autowired
-	  WorkDetailRepo workDetailRepo;
-	  
-	  @Autowired
-	  GetPaymentDetailRepo getPaymentDetailRepo;
-	  
-		@RequestMapping(value = { "/loginUser" }, method = RequestMethod.POST)
-		public @ResponseBody User loginUser(@RequestParam("username") String userName,
-				@RequestParam("userPass") String pass) {
 
-			User loginResponse = new User();
-			try {
+	@Autowired
+	UserRepo userRepo;
 
-				loginResponse = userRepo.findByDelStatusAndMobileNumberAndPassword(1,userName, pass);
+	@Autowired
+	CustomerRepo customerRepo;
 
-				if (loginResponse == null) {
-					loginResponse = new User();
-					loginResponse.setError(true);
-					loginResponse.setMsg("record Not found");
-				} else {
-					loginResponse.setError(false);
-					loginResponse.setMsg("Record Found");
-				}
-				System.out.println("loginResponse :" + loginResponse);
-			} catch (Exception e) {
-				e.printStackTrace();
+	@Autowired
+	EmployeeRepo employeeRepo;
 
+	@Autowired
+	LocationRepo locationRepo;
+
+	@Autowired
+	WorkRepo workRepo;
+
+	@Autowired
+	GetWorkCustomerRepo getWorkCustomerRepo;
+
+	@Autowired
+	GetCustomerInfoRepo getCustomerInfoRepo;
+
+	@Autowired
+	SettingRepo settingRepo;
+
+	@Autowired
+	PaymentRepo paymentRepo;
+
+	@Autowired
+	GetCustomerDetailsRepo getCustomerDetailsRepo;
+
+	@Autowired
+	GetCustomerLocNameRepo getCustomerLocNameRepo;
+
+	@Autowired
+	WorkDetailRepo workDetailRepo;
+
+	@Autowired
+	GetPaymentDetailRepo getPaymentDetailRepo;
+
+	@RequestMapping(value = { "/loginUser" }, method = RequestMethod.POST)
+	public @ResponseBody User loginUser(@RequestParam("username") String userName,
+			@RequestParam("userPass") String pass) {
+
+		User loginResponse = new User();
+		try {
+
+			loginResponse = userRepo.findByDelStatusAndMobileNumberAndPassword(1, userName, pass);
+
+			if (loginResponse == null) {
 				loginResponse = new User();
 				loginResponse.setError(true);
 				loginResponse.setMsg("record Not found");
+			} else {
+				loginResponse.setError(false);
+				loginResponse.setMsg("Record Found");
 			}
-			return loginResponse;
+			System.out.println("loginResponse :" + loginResponse);
+		} catch (Exception e) {
+			e.printStackTrace();
+
+			loginResponse = new User();
+			loginResponse.setError(true);
+			loginResponse.setMsg("record Not found");
 		}
+		return loginResponse;
+	}
 
-		@RequestMapping(value = { "/saveUser" }, method = RequestMethod.POST)
-		public @ResponseBody User saveUser(@RequestBody User user) {
+	@RequestMapping(value = { "/saveUser" }, method = RequestMethod.POST)
+	public @ResponseBody User saveUser(@RequestBody User user) {
 
-			User save = new User();
-			try {
+		User save = new User();
+		try {
 
-				save = userRepo.saveAndFlush(user);
+			save = userRepo.saveAndFlush(user);
 
-				if (save != null) {
-					save.setError(false);
-				} else {
+			if (save != null) {
+				save.setError(false);
+			} else {
 
-					save = new User();
-					save.setError(true);
-				}
-
-			} catch (Exception e) {
 				save = new User();
 				save.setError(true);
-				e.printStackTrace();
 			}
 
-			return save;
+		} catch (Exception e) {
+			save = new User();
+			save.setError(true);
+			e.printStackTrace();
 		}
 
-		@RequestMapping(value = { "/getAllUserList" }, method = RequestMethod.GET)
-		public @ResponseBody List<User> getAllUserList() {
+		return save;
+	}
 
-			List<User> list = new ArrayList<User>();
-			try {
+	@RequestMapping(value = { "/getAllUserList" }, method = RequestMethod.GET)
+	public @ResponseBody List<User> getAllUserList() {
 
-				list = userRepo.findByDelStatusOrderByUserIdDesc(1);
+		List<User> list = new ArrayList<User>();
+		try {
 
-			} catch (Exception e) {
+			list = userRepo.findByDelStatusOrderByUserIdDesc(1);
 
-				e.printStackTrace();
-			}
+		} catch (Exception e) {
 
-			return list;
-
+			e.printStackTrace();
 		}
 
-		@RequestMapping(value = { "/getUserList" }, method = RequestMethod.POST)
-		public @ResponseBody User getUserList(@RequestParam("userId") int userId) {
+		return list;
 
-			User list = new User();
-			try {
+	}
 
-				list = userRepo.findByUserIdAndDelStatusOrderByUserIdDesc(userId,1);
+	@RequestMapping(value = { "/getUserList" }, method = RequestMethod.POST)
+	public @ResponseBody User getUserList(@RequestParam("userId") int userId) {
 
-			} catch (Exception e) {
+		User list = new User();
+		try {
 
-				e.printStackTrace();
-			}
+			list = userRepo.findByUserIdAndDelStatusOrderByUserIdDesc(userId, 1);
 
-			return list;
+		} catch (Exception e) {
 
+			e.printStackTrace();
 		}
 
-		@RequestMapping(value = { "/deleteUser" }, method = RequestMethod.POST)
-		public @ResponseBody Info deleteUser(@RequestParam("userId") int userId) {
+		return list;
 
-			Info info = new Info();
+	}
 
-			try {
+	@RequestMapping(value = { "/deleteUser" }, method = RequestMethod.POST)
+	public @ResponseBody Info deleteUser(@RequestParam("userId") int userId) {
 
-				int delete = userRepo.deleteUser(userId);
+		Info info = new Info();
 
-				if (delete > 0) {
-					info.setError(false);
-					info.setMsg("deleted");
-				} else {
-					info.setError(true);
-					info.setMsg("failed");
-				}
+		try {
 
-			} catch (Exception e) {
+			int delete = userRepo.deleteUser(userId);
 
-				e.printStackTrace();
+			if (delete > 0) {
+				info.setError(false);
+				info.setMsg("deleted");
+			} else {
 				info.setError(true);
 				info.setMsg("failed");
 			}
 
-			return info;
+		} catch (Exception e) {
 
+			e.printStackTrace();
+			info.setError(true);
+			info.setMsg("failed");
 		}
-		@RequestMapping(value = { "/saveCustomer" }, method = RequestMethod.POST)
-		public @ResponseBody Customer saveCustomer(@RequestBody Customer user) {
 
-			Customer save = new Customer();
-			try {
+		return info;
 
-				save = customerRepo.saveAndFlush(user);
+	}
 
-				if (save != null) {
-					save.setError(false);
-				} else {
+	@RequestMapping(value = { "/saveCustomer" }, method = RequestMethod.POST)
+	public @ResponseBody Customer saveCustomer(@RequestBody Customer user) {
 
-					save = new Customer();
-					save.setError(true);
-				}
+		Customer save = new Customer();
+		try {
 
-			} catch (Exception e) {
+			save = customerRepo.saveAndFlush(user);
+
+			if (save != null) {
+				save.setError(false);
+			} else {
+
 				save = new Customer();
 				save.setError(true);
-				e.printStackTrace();
 			}
 
-			return save;
+		} catch (Exception e) {
+			save = new Customer();
+			save.setError(true);
+			e.printStackTrace();
 		}
 
-		@RequestMapping(value = { "/getAllCustomerList" }, method = RequestMethod.GET)
-		public @ResponseBody List<Customer> getAllCustomerList() {
+		return save;
+	}
 
-			List<Customer> list = new ArrayList<Customer>();
-			try {
+	@RequestMapping(value = { "/getAllCustomerList" }, method = RequestMethod.GET)
+	public @ResponseBody List<Customer> getAllCustomerList() {
 
-				list = customerRepo.findByDelStatusAndIsUsedOrderByCustomerIdDesc(1,1);
-					System.out.print("Cust List : "+list);
-			} catch (Exception e) {
+		List<Customer> list = new ArrayList<Customer>();
+		try {
 
-				e.printStackTrace();
-			}
+			list = customerRepo.findByDelStatusAndIsUsedOrderByCustomerIdDesc(1, 1);
+			System.out.print("Cust List : " + list);
+		} catch (Exception e) {
 
-			return list;
-
-		}
-		@RequestMapping(value = { "/getAllCustomerListWithLocName" }, method = RequestMethod.GET)
-		public @ResponseBody List<GetCustomerLocName> getAllCustomerListWithLocName() {
-
-			List<GetCustomerLocName> list = new ArrayList<GetCustomerLocName>();
-			try {
-
-				list = getCustomerLocNameRepo.getCustomerListWithLocName();
-					System.out.print("Cust List : "+list);
-			} catch (Exception e) {
-
-				e.printStackTrace();
-			}
-
-			return list;
-
+			e.printStackTrace();
 		}
 
-		@RequestMapping(value = { "/getCustInfoByCustId" }, method = RequestMethod.POST)
-		public @ResponseBody Customer getCustInfoByCustId(@RequestParam("custId") int custId) {
+		return list;
 
-			Customer list = new Customer();
-			try {
+	}
 
-				list = customerRepo.findByCustomerIdAndDelStatusOrderByCustomerIdDesc(custId,1);
+	@RequestMapping(value = { "/getAllCustomerListWithLocName" }, method = RequestMethod.GET)
+	public @ResponseBody List<GetCustomerLocName> getAllCustomerListWithLocName() {
 
-			} catch (Exception e) {
+		List<GetCustomerLocName> list = new ArrayList<GetCustomerLocName>();
+		try {
 
-				e.printStackTrace();
-			}
+			list = getCustomerLocNameRepo.getCustomerListWithLocName();
+			System.out.print("Cust List : " + list);
+		} catch (Exception e) {
 
-			return list;
-
+			e.printStackTrace();
 		}
 
-		@RequestMapping(value = { "/deleteCustomer" }, method = RequestMethod.POST)
-		public @ResponseBody Info deleteCustomer(@RequestParam("custId") int custId) {
+		return list;
 
-			Info info = new Info();
+	}
 
-			try {
+	@RequestMapping(value = { "/getCustInfoByCustId" }, method = RequestMethod.POST)
+	public @ResponseBody Customer getCustInfoByCustId(@RequestParam("custId") int custId) {
 
-				int delete = customerRepo.deleteCustomer(custId);
+		Customer list = new Customer();
+		try {
 
-				if (delete > 0) {
-					info.setError(false);
-					info.setMsg("deleted");
-				} else {
-					info.setError(true);
-					info.setMsg("failed");
-				}
+			list = customerRepo.findByCustomerIdAndDelStatusOrderByCustomerIdDesc(custId, 1);
 
-			} catch (Exception e) {
+		} catch (Exception e) {
 
-				e.printStackTrace();
+			e.printStackTrace();
+		}
+
+		return list;
+
+	}
+
+	@RequestMapping(value = { "/deleteCustomer" }, method = RequestMethod.POST)
+	public @ResponseBody Info deleteCustomer(@RequestParam("custId") int custId) {
+
+		Info info = new Info();
+
+		try {
+
+			int delete = customerRepo.deleteCustomer(custId);
+
+			if (delete > 0) {
+				info.setError(false);
+				info.setMsg("deleted");
+			} else {
 				info.setError(true);
 				info.setMsg("failed");
 			}
 
-			return info;
+		} catch (Exception e) {
 
+			e.printStackTrace();
+			info.setError(true);
+			info.setMsg("failed");
 		}
-		@RequestMapping(value = { "/saveLocation" }, method = RequestMethod.POST)
-		public @ResponseBody Location saveLocation(@RequestBody Location user) {
 
-			Location save = new Location();
-			try {
+		return info;
 
-				save = locationRepo.saveAndFlush(user);
+	}
 
-				if (save != null) {
-					save.setError(false);
-				} else {
+	@RequestMapping(value = { "/saveLocation" }, method = RequestMethod.POST)
+	public @ResponseBody Location saveLocation(@RequestBody Location user) {
 
-					save = new Location();
-					save.setError(true);
-				}
+		Location save = new Location();
+		try {
 
-			} catch (Exception e) {
+			save = locationRepo.saveAndFlush(user);
+
+			if (save != null) {
+				save.setError(false);
+			} else {
+
 				save = new Location();
 				save.setError(true);
-				e.printStackTrace();
 			}
 
-			return save;
+		} catch (Exception e) {
+			save = new Location();
+			save.setError(true);
+			e.printStackTrace();
 		}
 
-		@RequestMapping(value = { "/getAllLocationList" }, method = RequestMethod.GET)
-		public @ResponseBody List<Location> getAllLocationList() {
+		return save;
+	}
 
-			List<Location> list = new ArrayList<Location>();
-			try {
+	@RequestMapping(value = { "/getAllLocationList" }, method = RequestMethod.GET)
+	public @ResponseBody List<Location> getAllLocationList() {
 
-				list = locationRepo.findByDelStatusOrderByLocationIdDesc(1);
+		List<Location> list = new ArrayList<Location>();
+		try {
 
-			} catch (Exception e) {
+			list = locationRepo.findByDelStatusOrderByLocationIdDesc(1);
 
-				e.printStackTrace();
-			}
+		} catch (Exception e) {
 
-			return list;
-
+			e.printStackTrace();
 		}
 
-		@RequestMapping(value = { "/getLocationInfoByLocId" }, method = RequestMethod.POST)
-		public @ResponseBody Location getLocationInfoByLocId(@RequestParam("locationId") int locationId) {
+		return list;
 
-			Location list = new Location();
-			try {
+	}
 
-				list = locationRepo.findByLocationIdAndDelStatusOrderByLocationIdDesc(locationId,1);
+	@RequestMapping(value = { "/getLocationInfoByLocId" }, method = RequestMethod.POST)
+	public @ResponseBody Location getLocationInfoByLocId(@RequestParam("locationId") int locationId) {
 
-			} catch (Exception e) {
+		Location list = new Location();
+		try {
 
-				e.printStackTrace();
-			}
+			list = locationRepo.findByLocationIdAndDelStatusOrderByLocationIdDesc(locationId, 1);
 
-			return list;
+		} catch (Exception e) {
 
+			e.printStackTrace();
 		}
 
-		@RequestMapping(value = { "/deleteLocation" }, method = RequestMethod.POST)
-		public @ResponseBody Info deleteLocation(@RequestParam("locationId") int locationId) {
+		return list;
 
-			Info info = new Info();
+	}
 
-			try {
+	@RequestMapping(value = { "/deleteLocation" }, method = RequestMethod.POST)
+	public @ResponseBody Info deleteLocation(@RequestParam("locationId") int locationId) {
 
-				int delete = locationRepo.deleteLocation(locationId);
+		Info info = new Info();
 
-				if (delete > 0) {
-					info.setError(false);
-					info.setMsg("deleted");
-				} else {
-					info.setError(true);
-					info.setMsg("failed");
-				}
+		try {
 
-			} catch (Exception e) {
+			int delete = locationRepo.deleteLocation(locationId);
 
-				e.printStackTrace();
+			if (delete > 0) {
+				info.setError(false);
+				info.setMsg("deleted");
+			} else {
 				info.setError(true);
 				info.setMsg("failed");
 			}
 
-			return info;
+		} catch (Exception e) {
 
+			e.printStackTrace();
+			info.setError(true);
+			info.setMsg("failed");
 		}
-		
-		@RequestMapping(value = { "/saveWork" }, method = RequestMethod.POST)
-		public @ResponseBody Work saveWork(@RequestBody Work work) {
 
-			Work save = new Work();
-			try {
+		return info;
 
-				save = workRepo.saveAndFlush(work);
+	}
 
-				if (save != null) {
-					save.setError(false);
-				} else {
+	@RequestMapping(value = { "/saveWork" }, method = RequestMethod.POST)
+	public @ResponseBody Work saveWork(@RequestBody Work work) {
 
-					save = new Work();
-					save.setError(true);
-				}
+		Work save = new Work();
+		try {
 
-			} catch (Exception e) {
+			save = workRepo.saveAndFlush(work);
+
+			if (save != null) {
+				save.setError(false);
+			} else {
+
 				save = new Work();
 				save.setError(true);
-				e.printStackTrace();
 			}
 
-			return save;
+		} catch (Exception e) {
+			save = new Work();
+			save.setError(true);
+			e.printStackTrace();
 		}
-		@RequestMapping(value = { "/getCustomerByLocationId" }, method = RequestMethod.POST)
-		public @ResponseBody List<Customer> getCustomerByLocationId(@RequestParam("areaId") int areaId) {
 
-			 List<Customer> list = new  ArrayList<Customer>();
-			try {
+		return save;
+	}
 
-				list = customerRepo.findByAreaIdAndDelStatus(areaId,1);
+	@RequestMapping(value = { "/getCustomerByLocationId" }, method = RequestMethod.POST)
+	public @ResponseBody List<Customer> getCustomerByLocationId(@RequestParam("areaId") int areaId) {
 
-			} catch (Exception e) {
+		List<Customer> list = new ArrayList<Customer>();
+		try {
 
-				e.printStackTrace();
+			list = customerRepo.findByAreaIdAndDelStatus(areaId, 1);
+
+		} catch (Exception e) {
+
+			e.printStackTrace();
+		}
+
+		return list;
+
+	}
+
+	@RequestMapping(value = { "/getWorkByStatus" }, method = RequestMethod.POST)
+	public @ResponseBody List<GetWorkCustomer> getWorkByStatus(@RequestParam("status") int status) {
+
+		List<GetWorkCustomer> workList = new ArrayList<GetWorkCustomer>();
+		try {
+			workList = getWorkCustomerRepo.getAllworkInfo(status);
+			for (int i = 0; i < workList.size(); i++) {
+				String empIds = workList.get(i).getEmployeeId();
+				String[] values = empIds.split(",");
+				/// System.err.println("emp ids for notification are::" + empIds);
+				List<String> al = new ArrayList<String>(Arrays.asList(values));
+
+				Set<String> set = new HashSet<>(al);
+				al.clear();
+				al.addAll(set);
+				// System.err.println("emp ids for notification are:--------------:" +
+				// al.toString());
+				List<User> userList = new ArrayList<User>();
+				for (int j = 0; j < al.size(); j++) {
+					User user = userRepo.findByUserIdAndDelStatusOrderByUserIdDesc(Integer.parseInt(al.get(j)), 1);
+					userList.add(user);
+				}
+				workList.get(i).setUser(userList);
 			}
 
-			return list;
+		} catch (Exception e) {
 
+			e.printStackTrace();
 		}
 
-		@RequestMapping(value = { "/getWorkByStatus" }, method = RequestMethod.POST)
-		public @ResponseBody  List<GetWorkCustomer> getWorkByStatus(@RequestParam("status") int status) {
+		return workList;
 
-			
-			 List<GetWorkCustomer>   workList = new ArrayList<GetWorkCustomer>();
-			try {
-				workList=getWorkCustomerRepo.getAllworkInfo(status);
-				for(int i=0;i<workList.size();i++)
-				{
-					String empIds=workList.get(i).getEmployeeId();
-					String[] values = empIds.split(",");
-					///System.err.println("emp ids for notification are::" + empIds);
-					List<String> al = new ArrayList<String>(Arrays.asList(values));
+	}
 
-					Set<String> set = new HashSet<>(al);
-					al.clear();
-					al.addAll(set);
-					//System.err.println("emp ids for notification are:--------------:" + al.toString());
-					List<User> userList =new ArrayList<User>();
-					for(int j=0;j<al.size();j++)
-					{
-						User user =userRepo.findByUserIdAndDelStatusOrderByUserIdDesc(Integer.parseInt(al.get(j)),1);
-						userList.add(user); 						
-					}
-					workList.get(i).setUser(userList);
+	@RequestMapping(value = { "/getWorkListSchedule" }, method = RequestMethod.POST)
+	public @ResponseBody List<GetWorkCustomer> getWorkListSchedule(@RequestParam("status") int status) {
+
+		List<GetWorkCustomer> workList = new ArrayList<GetWorkCustomer>();
+		try {
+			workList = getWorkCustomerRepo.getAllworkInfoSchedule(status);
+			for (int i = 0; i < workList.size(); i++) {
+				String empIds = workList.get(i).getEmployeeId();
+				String[] values = empIds.split(",");
+				/// System.err.println("emp ids for notification are::" + empIds);
+				List<String> al = new ArrayList<String>(Arrays.asList(values));
+
+				Set<String> set = new HashSet<>(al);
+				al.clear();
+				al.addAll(set);
+				// System.err.println("emp ids for notification are:--------------:" +
+				// al.toString());
+				List<User> userList = new ArrayList<User>();
+				for (int j = 0; j < al.size(); j++) {
+					User user = userRepo.findByUserIdAndDelStatusOrderByUserIdDesc(Integer.parseInt(al.get(j)), 1);
+					userList.add(user);
 				}
-
-			} catch (Exception e) {
-
-				e.printStackTrace();
+				workList.get(i).setUser(userList);
 			}
 
-			return workList;
+		} catch (Exception e) {
 
+			e.printStackTrace();
 		}
-		
-		@RequestMapping(value = { "/getWorkListSchedule" }, method = RequestMethod.POST)
-		public @ResponseBody  List<GetWorkCustomer> getWorkListSchedule(@RequestParam("status") int status) {
 
-			
-			 List<GetWorkCustomer> workList = new ArrayList<GetWorkCustomer>();
-			try {
-				workList=getWorkCustomerRepo.getAllworkInfoSchedule(status);
-				for(int i=0;i<workList.size();i++)
-				{
-					String empIds=workList.get(i).getEmployeeId();
-					String[] values = empIds.split(",");
-					///System.err.println("emp ids for notification are::" + empIds);
-					List<String> al = new ArrayList<String>(Arrays.asList(values));
+		return workList;
 
-					Set<String> set = new HashSet<>(al);
-					al.clear();
-					al.addAll(set);
-					//System.err.println("emp ids for notification are:--------------:" + al.toString());
-					List<User> userList =new ArrayList<User>();
-					for(int j=0;j<al.size();j++)
-					{
-						User user =userRepo.findByUserIdAndDelStatusOrderByUserIdDesc(Integer.parseInt(al.get(j)),1);
-						userList.add(user); 						
-					}
-					workList.get(i).setUser(userList);
-				}
+	}
 
-			} catch (Exception e) {
+	@RequestMapping(value = { "/getWorkHistoryByCustId" }, method = RequestMethod.POST)
+	public @ResponseBody List<GetWorkCustomer> getWorkHistoryByCustId(@RequestParam("custId") int custId,
+			@RequestParam("status") List<Integer> status, @RequestParam("fromDate") String fromDate,
+			@RequestParam("toDate") String toDate) {
 
-				e.printStackTrace();
+		List<GetWorkCustomer> workList = new ArrayList<GetWorkCustomer>();
+		try {
+			if (custId == 0) {
+				workList = getWorkCustomerRepo.getAllWorkHistoryByDate(status, fromDate, toDate);
+			} else {
+				workList = getWorkCustomerRepo.getAllworkHistory(custId, status, fromDate, toDate);
 			}
 
-			return workList;
+			for (int i = 0; i < workList.size(); i++) {
+				String empIds = workList.get(i).getEmployeeId();
+				String[] values = empIds.split(",");
+				/// System.err.println("emp ids for notification are::" + empIds);
+				List<String> al = new ArrayList<String>(Arrays.asList(values));
 
-		}
-		@RequestMapping(value = { "/getWorkHistoryByCustId" }, method = RequestMethod.POST)
-		public @ResponseBody  List<GetWorkCustomer> getWorkHistoryByCustId(@RequestParam("custId") int custId ,@RequestParam("status") List<Integer> status,@RequestParam("fromDate") String fromDate,@RequestParam("toDate") String toDate) {
-
-			
-			 List<GetWorkCustomer> workList = new ArrayList<GetWorkCustomer>(); 
-			try {
-				if(custId==0)
-				{
-					workList=getWorkCustomerRepo.getAllWorkHistoryByDate(status,fromDate,toDate);
+				Set<String> set = new HashSet<>(al);
+				al.clear();
+				al.addAll(set);
+				// System.err.println("emp ids for notification are:--------------:" +
+				// al.toString());
+				List<User> userList = new ArrayList<User>();
+				for (int j = 0; j < al.size(); j++) {
+					User user = userRepo.findByUserIdAndDelStatusOrderByUserIdDesc(Integer.parseInt(al.get(j)), 1);
+					userList.add(user);
 				}
-				else
-				{
-					workList=getWorkCustomerRepo.getAllworkHistory(custId,status,fromDate,toDate);
-				}
-							
-				for(int i=0;i<workList.size();i++)
-				{
-					String empIds=workList.get(i).getEmployeeId();
-					String[] values = empIds.split(",");
-					///System.err.println("emp ids for notification are::" + empIds);
-					List<String> al = new ArrayList<String>(Arrays.asList(values));
-
-					Set<String> set = new HashSet<>(al);
-					al.clear();
-					al.addAll(set);
-					//System.err.println("emp ids for notification are:--------------:" + al.toString());
-					List<User> userList =new ArrayList<User>();
-					for(int j=0;j<al.size();j++)
-					{
-						User user =userRepo.findByUserIdAndDelStatusOrderByUserIdDesc(Integer.parseInt(al.get(j)),1);
-						userList.add(user); 						
-					}
-					workList.get(i).setUser(userList);
-				}
-
-			} catch (Exception e) {
-
-				e.printStackTrace();
+				workList.get(i).setUser(userList);
 			}
 
-			return workList;
+		} catch (Exception e) {
 
+			e.printStackTrace();
 		}
 
+		return workList;
 
-		@RequestMapping(value = { "/getCustInfoPaymentByCustId" }, method = RequestMethod.POST)
-		public @ResponseBody  List<GetCustomerInfo> getCustInfoPaymentByCustId(@RequestParam("custId") int custId) {
+	}
 
-			
-			 List<GetCustomerInfo> workList = new ArrayList<GetCustomerInfo>(); 
-			try {
-				workList=getCustomerInfoRepo.getAllCustInfoPayment(custId);
-				
-			} catch (Exception e) {
+	@RequestMapping(value = { "/getCustInfoPaymentByCustId" }, method = RequestMethod.POST)
+	public @ResponseBody List<GetCustomerInfo> getCustInfoPaymentByCustId(@RequestParam("custId") int custId) {
 
-				e.printStackTrace();
-			}
+		List<GetCustomerInfo> workList = new ArrayList<GetCustomerInfo>();
+		try {
+			workList = getCustomerInfoRepo.getAllCustInfoPayment(custId);
 
-			return workList;
+		} catch (Exception e) {
 
+			e.printStackTrace();
 		}
-		
-		@RequestMapping(value = { "/updateSettingValue" }, method = RequestMethod.POST)
-		public @ResponseBody Info updateSettingValue(@RequestParam("fromDate") String fromDate) {
 
-			Info info = new Info();
+		return workList;
 
-			try {
+	}
 
-				int updatre = settingRepo.UpdateDate(fromDate);
+	@RequestMapping(value = { "/updateSettingValue" }, method = RequestMethod.POST)
+	public @ResponseBody Info updateSettingValue(@RequestParam("fromDate") String fromDate) {
 
-				if (updatre > 0) {
-					info.setError(false);
-					info.setMsg("Update");
-				} else {
-					info.setError(true);
-					info.setMsg("failed");
-				}
+		Info info = new Info();
 
-			} catch (Exception e) {
+		try {
 
-				e.printStackTrace();
+			int updatre = settingRepo.UpdateDate(fromDate);
+
+			if (updatre > 0) {
+				info.setError(false);
+				info.setMsg("Update");
+			} else {
 				info.setError(true);
 				info.setMsg("failed");
 			}
 
-			return info;
+		} catch (Exception e) {
 
+			e.printStackTrace();
+			info.setError(true);
+			info.setMsg("failed");
 		}
-		@RequestMapping(value = { "/getSettingValue" }, method = RequestMethod.GET)
-		public @ResponseBody Info getSettingValue() {
 
-			Info info = new Info();
-			Setting setting=new Setting();
-			try {
+		return info;
 
-				setting = settingRepo.findBySettingsId(1);
+	}
 
-			
-					info.setError(false);
-					info.setMsg(setting.getSettingsValue());
-			
+	@RequestMapping(value = { "/getSettingValue" }, method = RequestMethod.GET)
+	public @ResponseBody Info getSettingValue() {
 
-			} catch (Exception e) {
+		Info info = new Info();
+		Setting setting = new Setting();
+		try {
 
-				e.printStackTrace();
-				info.setError(true);
-				info.setMsg("failed");
-			}
+			setting = settingRepo.findBySettingsId(1);
 
-			return info;
+			info.setError(false);
+			info.setMsg(setting.getSettingsValue());
 
+		} catch (Exception e) {
+
+			e.printStackTrace();
+			info.setError(true);
+			info.setMsg("failed");
 		}
-		@RequestMapping(value = { "/savePayment" }, method = RequestMethod.POST)
-		public @ResponseBody Payment savePayment(@RequestBody Payment payment) {
 
-			Payment save = new Payment();
-			try {
+		return info;
 
-				save = paymentRepo.saveAndFlush(payment);
+	}
 
-				if (save != null) {
-					save.setError(false);
-				} else {
+	@RequestMapping(value = { "/savePayment" }, method = RequestMethod.POST)
+	public @ResponseBody Payment savePayment(@RequestBody Payment payment) {
 
-					save = new Payment();
-					save.setError(true);
-				}
+		Payment save = new Payment();
+		try {
 
-			} catch (Exception e) {
+			save = paymentRepo.saveAndFlush(payment);
+
+			if (save != null) {
+				save.setError(false);
+			} else {
+
 				save = new Payment();
 				save.setError(true);
-				e.printStackTrace();
 			}
 
-			return save;
+		} catch (Exception e) {
+			save = new Payment();
+			save.setError(true);
+			e.printStackTrace();
 		}
-		@RequestMapping(value = { "/getCustomerInfoByAmtDesc" }, method = RequestMethod.GET)
-		public @ResponseBody List<GetCustomerDetails> getCustomerInfoByAmtDesc() {
 
-			List<GetCustomerDetails> list = new ArrayList<GetCustomerDetails>();
-			try {
+		return save;
+	}
 
-				list = getCustomerDetailsRepo.getCustomerInfoByAmtDesc();
+	@RequestMapping(value = { "/getCustomerInfoByAmtDesc" }, method = RequestMethod.GET)
+	public @ResponseBody List<GetCustomerDetails> getCustomerInfoByAmtDesc() {
 
-			} catch (Exception e) {
+		List<GetCustomerDetails> list = new ArrayList<GetCustomerDetails>();
+		try {
 
-				e.printStackTrace();
-			}
+			list = getCustomerDetailsRepo.getCustomerInfoByAmtDesc();
 
-			return list;
+		} catch (Exception e) {
 
+			e.printStackTrace();
 		}
-		@RequestMapping(value = { "/getTotalWorkByCustId" }, method = RequestMethod.POST)
-		public @ResponseBody  List<GetWorkDetail> getTotalWorkByCustId(@RequestParam("custId") int custId) {
 
-			
-			 List<GetWorkDetail> workList = new ArrayList<GetWorkDetail>(); 
-			try {
-				workList=workDetailRepo.getTotalWorkAmtByCustId(custId);
-				
-			} catch (Exception e) {
+		return list;
 
-				e.printStackTrace();
-			}
+	}
 
-			return workList;
+	@RequestMapping(value = { "/getTotalWorkByCustId" }, method = RequestMethod.POST)
+	public @ResponseBody List<GetWorkDetail> getTotalWorkByCustId(@RequestParam("custId") int custId) {
 
+		List<GetWorkDetail> workList = new ArrayList<GetWorkDetail>();
+		try {
+			workList = workDetailRepo.getTotalWorkAmtByCustId(custId);
+
+		} catch (Exception e) {
+
+			e.printStackTrace();
 		}
-		@RequestMapping(value = { "/getTotalPaymentByCustId" }, method = RequestMethod.POST)
-		public @ResponseBody  List<GetPaymentDetail> getTotalPaymentByCustId(@RequestParam("custId") int custId) {
 
-			
-			 List<GetPaymentDetail> workList = new ArrayList<GetPaymentDetail>(); 
-			try {
-				workList=getPaymentDetailRepo.getTotalPaymentAmtByCustId(custId);
-				
-			} catch (Exception e) {
+		return workList;
 
-				e.printStackTrace();
-			}
+	}
 
-			return workList;
+	@RequestMapping(value = { "/getTotalPaymentByCustId" }, method = RequestMethod.POST)
+	public @ResponseBody List<GetPaymentDetail> getTotalPaymentByCustId(@RequestParam("custId") int custId) {
 
+		List<GetPaymentDetail> workList = new ArrayList<GetPaymentDetail>();
+		try {
+			workList = getPaymentDetailRepo.getTotalPaymentAmtByCustId(custId);
+
+		} catch (Exception e) {
+
+			e.printStackTrace();
 		}
-		
-		@RequestMapping(value = { "/getTotalAmountByCustId" }, method = RequestMethod.POST)
-		public @ResponseBody  List<GetPaymentDetail> getTotalAmountByCustId(@RequestParam("custId") int custId ) {
 
-			
-			 List<GetPaymentDetail> paymentList = new ArrayList<GetPaymentDetail>(); 
-			try {
-				 List<GetWorkDetail> workList=workDetailRepo.getTotalWorkAmtByCustId(custId);
-				 paymentList = getPaymentDetailRepo.getTotalPaymentAmtByCustId(custId);
-					 
-				 
-				 for(int i = 0 ; i<workList.size() ; i++) {
-					 
-					 int find = 0 ;
-					 
-					 for(int j = 0 ; j<paymentList.size() ; j++) {
-						 
-						 if(workList.get(i).getWorkDate().compareTo(paymentList.get(j).getPaymentDate())==0) {
-							 paymentList.get(j).setTotalAmt(workList.get(i).getTotalAmt());
-							 find=1;
-							 break;
-						 }
-					 }
-					 
-					 if(find==0) {
-						 
-						 GetPaymentDetail getPaymentDetail = new GetPaymentDetail();
-						 getPaymentDetail.setPaymentDate(workList.get(i).getWorkDate());
-						 getPaymentDetail.setTotalAmt(workList.get(i).getTotalAmt());
-						 getPaymentDetail.setCustomerId(workList.get(i).getCustomerId());
-						// getPaymentDetail.setPaymentId(workList.get(i).getPaymentId());
-						 paymentList.add(getPaymentDetail);
-					 }
-					 
-				 }
+		return workList;
 
-			} catch (Exception e) {
+	}
 
-				e.printStackTrace();
-			}
+	@RequestMapping(value = { "/getTotalAmountByCustId" }, method = RequestMethod.POST)
+	public @ResponseBody List<GetPaymentDetail> getTotalAmountByCustId(@RequestParam("custId") int custId) {
 
-			return paymentList;
+		List<GetPaymentDetail> paymentList = new ArrayList<GetPaymentDetail>();
+		try {
+			List<GetWorkDetail> workList = workDetailRepo.getTotalWorkAmtByCustId(custId);
+			paymentList = getPaymentDetailRepo.getTotalPaymentAmtByCustId(custId);
 
-		}
-		@RequestMapping(value = { "/deleteAssignedWork" }, method = RequestMethod.POST)
-		public @ResponseBody Info deleteAssignedWork(@RequestParam("workId") int workId) {
+			for (int i = 0; i < workList.size(); i++) {
 
-			Info info = new Info();
+				int find = 0;
 
-			try {
+				for (int j = 0; j < paymentList.size(); j++) {
 
-				int delete = workRepo.deleteAssignedWork(workId);
-
-				if (delete > 0) {
-					info.setError(false);
-					info.setMsg("deleted");
-				} else {
-					info.setError(true);
-					info.setMsg("failed");
+					if (workList.get(i).getWorkDate().compareTo(paymentList.get(j).getPaymentDate()) == 0) {
+						paymentList.get(j).setTotalAmt(workList.get(i).getTotalAmt());
+						find = 1;
+						break;
+					}
 				}
 
-			} catch (Exception e) {
+				if (find == 0) {
 
-				e.printStackTrace();
+					GetPaymentDetail getPaymentDetail = new GetPaymentDetail();
+					getPaymentDetail.setPaymentDate(workList.get(i).getWorkDate());
+					getPaymentDetail.setTotalAmt(workList.get(i).getTotalAmt());
+					getPaymentDetail.setCustomerId(workList.get(i).getCustomerId());
+					// getPaymentDetail.setPaymentId(workList.get(i).getPaymentId());
+					paymentList.add(getPaymentDetail);
+				}
+
+			}
+
+		} catch (Exception e) {
+
+			e.printStackTrace();
+		}
+
+		return paymentList;
+
+	}
+
+	@RequestMapping(value = { "/deleteAssignedWork" }, method = RequestMethod.POST)
+	public @ResponseBody Info deleteAssignedWork(@RequestParam("workId") int workId) {
+
+		Info info = new Info();
+
+		try {
+
+			int delete = workRepo.deleteAssignedWork(workId);
+
+			if (delete > 0) {
+				info.setError(false);
+				info.setMsg("deleted");
+			} else {
 				info.setError(true);
 				info.setMsg("failed");
 			}
 
-			return info;
+		} catch (Exception e) {
 
+			e.printStackTrace();
+			info.setError(true);
+			info.setMsg("failed");
 		}
+
+		return info;
+
+	}
+
+	@RequestMapping(value = { "/updateStatusWork" }, method = RequestMethod.POST)
+	public @ResponseBody Info updateStatusWork(@RequestParam("workId") int workId, @RequestParam("status") int status,
+			@RequestParam("nextDate") String nextDate) {
+
+		Info info = new Info();
+
+		try {
+
+			int delete = workRepo.updateStatusAssignedWork(workId, status, nextDate);
+
+			if (delete > 0) {
+				info.setError(false);
+				info.setMsg("Updated");
+			} else {
+				info.setError(true);
+				info.setMsg("failed");
+			}
+
+		} catch (Exception e) {
+
+			e.printStackTrace();
+			info.setError(true);
+			info.setMsg("failed");
+		}
+
+		return info;
+
+	}
 }

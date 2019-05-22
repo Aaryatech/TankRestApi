@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 import com.ats.tankwebapi.model.Work;
 
-public interface WorkRepo extends JpaRepository<Work, Integer>{
+public interface WorkRepo extends JpaRepository<Work, Integer> {
 
 	List<Work> findByStatusAndDelStatus(int status, int i);
 
@@ -18,5 +18,10 @@ public interface WorkRepo extends JpaRepository<Work, Integer>{
 	@Query("update Work set del_status=0  WHERE work_id=:workId")
 	int deleteAssignedWork(@Param("workId") int workId);
 
+	@Transactional
+	@Modifying
+	@Query("update Work set next_date=:nextDate ,status=:status WHERE work_id=:workId")
+	int updateStatusAssignedWork(@Param("workId") int workId, @Param("status") int status,
+			@Param("nextDate") String nextDate);
 
 }
